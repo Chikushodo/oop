@@ -1,65 +1,74 @@
 #include <iostream>
-#include <string>
 
 using namespace std;
 
-class BankAccount {
+class Point {
 public:
-    BankAccount(){
-        accountNumber_ = "none";
-        balance_ = 0;
+    Point(double x = 0, double y = 0, double z = 0) : x_(x), y_(y), z_(z) {}
+
+    double getX() const { return x_; }
+    double getY() const { return y_; }
+    double getZ() const { return z_; }
+
+    Point operator-(const Point& other) const {
+        return Point(x_ - other.x_, y_ - other.y_, z_ - other.z_);
     }
 
-    BankAccount(const string& accountNumber, double initialBalance)
-        : accountNumber_(accountNumber), balance_(initialBalance) {
-        cout << "Вызван основной конструктор" << endl;
+    bool operator==(const Point& other) const {
+        return (x_ == other.x_ && y_ == other.y_ && z_ == other.z_);
     }
 
-    BankAccount(const BankAccount& other)
-        : accountNumber_(other.accountNumber_ + "_copy"),  
-        balance_(other.balance_ + 1.0) {               
-
-        cout << "Вызван конструктор копирования" << endl;
-        cout << "  Копирование номера счета: " << other.accountNumber_ << " -> " << accountNumber_ << endl;
-        cout << "  Копирование баланса: " << other.balance_ << " -> " << balance_ << endl;
+    bool operator!=(const Point& other) const {
+        return !(*this == other); 
     }
 
-    string getAccountNumber() const {
-        return accountNumber_;
+    Point& operator++() {
+        x_ += 1.0;
+        y_ += 1.0;
+        z_ += 1.0;
+        return *this;  
     }
 
-    double getBalance() const {
-        return balance_;
+    Point operator++(int) {
+        Point temp = *this; 
+        ++(*this);       
+        return temp;      
     }
 
-    void deposit(double amount) {
-        if (amount > 0) {
-            balance_ += amount;
-        }
-    }
-
-    void withdraw(double amount) {
-        if (amount > 0 && amount <= balance_) {
-            balance_ -= amount;
-        }
-    }
-
-    void transferTo(BankAccount& target, double amount) {
-        if (amount > 0 && amount <= balance_) {
-            balance_ -= amount;
-            target.deposit(amount);
-        }
+    void print() const {
+        cout << "(" << x_ << ", " << y_ << ", " << z_ << ")" << endl;
     }
 
 private:
-    string accountNumber_;
-    double balance_;
+    double x_;
+    double y_;
+    double z_; 
 };
 
 int main() {
-    BankAccount account1("12345", 100.0);
-    cout << "Счет 1: Номер = " << account1.getAccountNumber() << ", Баланс = " << account1.getBalance() << endl;
+    Point p1(1, 2, 3);
+    Point p2(4, 5, 6);
+    Point p3(1, 2, 3);
 
-    BankAccount account2 = account1; 
-    cout << "Счет 2: Номер = " << account2.getAccountNumber() << ", Баланс = " << account2.getBalance() << endl;
+    cout << "p1: ";
+    p1.print();
+    cout << "p2: ";
+    p2.print();
+
+    Point diff = p2 - p1;
+    cout << "p2 - p1: ";
+    diff.print();
+
+    cout << "p1 == p2: " << (p1 == p2) << endl;
+    cout << "p1 == p3: " << (p1 == p3) << endl;
+    cout << "p1 != p2: " << (p1 != p2) << endl;
+
+    cout << "++p1: ";
+    (++p1).print();
+
+    cout << "p2++: ";
+    (p2++).print();
+    cout << "p2 после p2++: ";
+    p2.print(); 
+
 }
