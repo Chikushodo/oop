@@ -1,74 +1,92 @@
 #include <iostream>
-
+#include <string>
 using namespace std;
-
-class Point {
-public:
-    Point(double x = 0, double y = 0, double z = 0) : x_(x), y_(y), z_(z) {}
-
-    double getX() const { return x_; }
-    double getY() const { return y_; }
-    double getZ() const { return z_; }
-
-    Point operator-(const Point& other) const {
-        return Point(x_ - other.x_, y_ - other.y_, z_ - other.z_);
-    }
-
-    bool operator==(const Point& other) const {
-        return (x_ == other.x_ && y_ == other.y_ && z_ == other.z_);
-    }
-
-    bool operator!=(const Point& other) const {
-        return !(*this == other); 
-    }
-
-    Point& operator++() {
-        x_ += 1.0;
-        y_ += 1.0;
-        z_ += 1.0;
-        return *this;  
-    }
-
-    Point operator++(int) {
-        Point temp = *this; 
-        ++(*this);       
-        return temp;      
-    }
-
-    void print() const {
-        cout << "(" << x_ << ", " << y_ << ", " << z_ << ")" << endl;
-    }
-
+class CombatUnit {
 private:
-    double x_;
-    double y_;
-    double z_; 
+    int health;
+    int damage;
+    string unitType;
+
+    static int totalHealth;
+    static int totalDamage;
+
+public:
+    CombatUnit(int health, int damage, std::string unitType) : health(health), damage(damage), unitType(unitType) {
+        totalHealth += health;
+        totalDamage += damage;
+        cout << "Создана боевая единица типа: " << unitType << endl;
+        cout << "Общее здоровье армии: " << totalHealth << endl;
+        cout << "Общая боевая мощь армии: " << totalDamage << endl;
+    }
+
+    ~CombatUnit() {
+        totalHealth -= health;
+        totalDamage -= damage;
+        cout << "Уничтожена боевая единица типа: " << unitType << endl;
+        cout << "Общее здоровье армии: " << totalHealth << endl;
+        cout << "Общая боевая мощь армии: " << totalDamage << endl;
+    }
+
+    int getHealth() const { return health; }
+    int getDamage() const { return damage; }
+    string getUnitType() const { return unitType; }
+    static int getTotalHealth() { return totalHealth; }
+    static int getTotalDamage() { return totalDamage; }
+
+    void setHealth(int newHealth) {
+        totalHealth -= health; 
+        health = newHealth;
+        totalHealth += health; 
+        cout << "Здоровье " << unitType << " изменено.  Новое значение: " << health << endl;
+        cout << "Общее здоровье армии: " << totalHealth << endl;
+    }
+
+    void setDamage(int newDamage) {
+        totalDamage -= damage; 
+        damage = newDamage;
+        totalDamage += damage; 
+        cout << "Урон " << unitType << " изменен. Новое значение: " << damage << endl;
+        cout << "Общая боевая мощь армии: " << totalDamage << endl;
+    }
+
+    void takeDamage(int damageTaken) {
+        int prevHealth = health;
+        health -= damageTaken;
+        if (health < 0) {
+            health = 0;
+        }
+        totalHealth -= (prevHealth - health); 
+        cout << unitType << " получил " << damageTaken << " урона.  Осталось здоровья: " << health << endl;
+        cout << "Общее здоровье армии: " << totalHealth << endl;
+
+        if (health == 0) {
+            cout << unitType << " уничтожен!" << endl;
+        }
+    }
+
+    void dealDamage(CombatUnit& target) {
+        cout << unitType << " наносит " << damage << " урона " << target.unitType << endl;
+        target.takeDamage(damage);
+    }
 };
+int CombatUnit::totalHealth = 0;
+int CombatUnit::totalDamage = 0;
 
 int main() {
-    Point p1(1, 2, 3);
-    Point p2(4, 5, 6);
-    Point p3(1, 2, 3);
+    CombatUnit unit1(100, 20, "Warrior");
+    CombatUnit unit2(80, 15, "Archer");
 
-    cout << "p1: ";
-    p1.print();
-    cout << "p2: ";
-    p2.print();
+    cout << "Общее здоровье армии: " << CombatUnit::getTotalHealth() << endl;
+    cout << "Общая боевая мощь армии: " << CombatUnit::getTotalDamage() << endl;
 
-    Point diff = p2 - p1;
-    cout << "p2 - p1: ";
-    diff.print();
+    unit1.setDamage(25);
+    unit2.setHealth(90);
 
-    cout << "p1 == p2: " << (p1 == p2) << endl;
-    cout << "p1 == p3: " << (p1 == p3) << endl;
-    cout << "p1 != p2: " << (p1 != p2) << endl;
+    unit1.dealDamage(unit2);
 
-    cout << "++p1: ";
-    (++p1).print();
+    unit2.takeDamage(50);
+    unit2.dealDamage(unit1);
 
-    cout << "p2++: ";
-    (p2++).print();
-    cout << "p2 после p2++: ";
-    p2.print(); 
-
+    CombatUnit* unit3 = new CombatUnit(120, 30, "Tank");
+    delete unit3; 
 }
