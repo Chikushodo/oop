@@ -1,51 +1,53 @@
 #include <iostream>
+#include <vector>
 #include <string>
 
 using namespace std;
 
-class Animal {
-private:
-    string name;
-    int weight;
+int main() {
+    int N;
+    cout << "Введите размер вектора целых чисел: ";
+    cin >> N;
 
-protected:
-    string species; 
+    vector<int> numbers; 
+    numbers.reserve(N);  
 
-public:
-
-    Animal(string name, int weight, string species) : name(name), weight(weight), species(species) {}
-
-
-    void print() const {
-        cout << "Имя: " << name << ", Вес: " << weight << ", Вид: " << species << endl;
+    cout << "Введите " << N << " чисел:" << endl;
+    for (int i = 0; i < N; ++i) {
+        int num;
+        cin >> num;
+        numbers.push_back(num); 
     }
 
-    string getName() const { return name; }
-    int getWeight() const { return weight; }
-};
+    cout << "Числа в обратном порядке: ";
+    for (int i = numbers.size() - 1; i >= 0; --i) {
+        cout << numbers[i] << " "; 
+    }
+    cout << endl;
 
-class Cat : public Animal {
-public:
-    Cat(string name, int weight) : Animal(name, weight, "Кошка") {}
+    cout << "\nВведите размер вектора строк: ";
+    cin >> N;
+    cin.ignore();
 
-};
+    vector<string> strings;
+    strings.reserve(N);
 
-class Dog : public Animal {
-public:
-    Dog(string name, int weight) : Animal(name, weight, "Собака") {}
-};
+    cout << "Введите " << N << " строк:" << endl;
+    for (int i = 0; i < N; ++i) {
+        string str;
+        getline(cin, str); 
+        strings.push_back(str); 
+    }
 
-int main() {
-    Cat cat1("Муська", 4);
-    Cat cat2("Барсик", 5);
-    Dog dog1("Бобик", 15);
-    Dog dog2("Рекс", 20);
+    cout << "Попытка добавить еще один элемент..." << endl;
+    string extraString;
+    cout << "Введите дополнительную строку: ";
+    getline(cin, extraString);
+    strings.push_back(extraString); 
 
-    cout << "Информация о кошках:" << endl;
-    cat1.print();
-    cat2.print();
-
-    cout << "\nИнформация о собаках:" << endl;
-    dog1.print();
-    dog2.print();
+    cout << "Содержимое вектора строк:" << endl;
+    for (const string& s : strings) { 
+        cout << s << endl;
+    }
 }
+
