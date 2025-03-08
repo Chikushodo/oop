@@ -1,196 +1,83 @@
 #include <iostream>
 #include <string>
-// its so hard, im cry
-// in street rain, in soul pain
+
 using namespace std;
 
-class Animal {
-protected:
-    string name;  
-    int age;    
-
+class BaseEnemy {
 public:
-    // konstruktor po ymolch
-    Animal() : name("Unknown"), age(0) {}
-
-    // s parametrami
-    Animal(string n, int a) : name(n) {}
-
-    //metod vivoda o animals
-    virtual void display() const {
-        cout << "name: " << name << ", age: " << age << endl;
+    BaseEnemy() {
+        cout << "Вызван конструктор BaseEnemy" << endl;
     }
+    virtual void DoDamage() = 0; 
 
-    // peregryz sravnenia
-    bool operator==(const Animal& other) const {
-        return (name == other.name && age == other.age);
-    }
+    virtual void Die() = 0; 
 
-    // peregryz slogenia
-    Animal operator+(const Animal& other) {
-        return Animal(name + " & " + other.name, age + other.age);
-    }
+    virtual void ChasePlayer() = 0; 
 
-    // inkriment age
-    Animal& operator++() {
-        age++;
-        return *this;
-    }
-
-    // destructor
-    virtual ~Animal() {}
-};
-
-// xichnik 
-class Predator : public Animal {
-public:
-    Predator(string n, int a) : Animal(n, a) {}
-
-    void display() const override {
-        cout << "predator: ";
-        Animal::display();
+    virtual ~BaseEnemy() {
+        cout << "Вызван деструктор BaseEnemy" << endl;
     }
 };
 
-class Fish : public Animal {
+class Goblin : public BaseEnemy {
 public:
-    Fish(string n, int a) : Animal(n, a) {}
+    Goblin() {
+        cout << "Вызван конструктор Goblin" << endl;
+    }
 
-    void display() const override {
-        cout << "fish: ";
-        Animal::display();
+    void DoDamage() override { 
+        cout << "Гоблин наносит 5 единиц урона!" << endl;
+    }
+
+    void Die() override {
+        cout << "Гоблин умирает с противным хрипом!" << endl;
+    }
+
+    void ChasePlayer() override {
+        cout << "Гоблин бежит за игроком, размахивая дубиной!" << endl;
+    }
+
+    ~Goblin() override {
+        cout << "Вызван деструктор Goblin" << endl;
     }
 };
 
-// reptilia
-class Reptile : public Animal {
+class Orc : public BaseEnemy {
 public:
-    Reptile(string n, int a) : Animal(n, a) {}
+    Orc() {
+        cout << "Вызван конструктор Orc" << endl;
+    }
 
-    void display() const override {
-        cout << "reptile: ";
-        Animal::display();
+    void DoDamage() override {
+        cout << "Орк бьет топором, нанося 10 единиц урона!" << endl;
+    }
+
+    void Die() override {
+        cout << "Орк падает, издав боевой клич!" << endl;
+    }
+
+    void ChasePlayer() override {
+        cout << "Орк несется к игроку с яростным ревом!" << endl;
+    }
+
+    ~Orc() override {
+        cout << "Вызван деструктор Orc" << endl;
     }
 };
-
-// kollekcia animals
-const int MAX_ANIMALS = 100; // max
-Animal* animals[MAX_ANIMALS]; // massiv
-int animalCount = 0; 
-
-// add
-void addAnimal() {
-    if (animalCount >= MAX_ANIMALS) {
-        cout << "dostignuto max" << endl;
-        return;
-    }
-
-    string name;
-    int age;
-
-    cout << "vvedite animal: ";
-    cin >> name;
-
-    cout << "vvedite age animal: ";
-    cin >> age;
-
-    // vibor
-    int type;
-    cout << "viberite type animals: 1 - predator, 2 - fish, 3 - reptyle: ";
-    cin >> type;
-
-    // create object ot vibora 
-    if (type == 1) {
-        animals[animalCount++] = new Predator(name, age);
-    }
-    else if (type == 2) {
-        animals[animalCount++] = new Fish(name, age);
-    }
-    else if (type == 3) {
-        animals[animalCount++] = new Reptile(name, age);
-    }
-
-    cout << "animal successfully add!" << endl;
-}
-
-// del animal po index
-void removeAnimal() {
-    int index;
-    cout << "vvedite index animal for delete" << animalCount - 1 << "): ";
-    cin >> index;
-
-    delete animals[index]; // osvob pam
-    for (int i = index; i < animalCount - 1; ++i) {
-        animals[i] = animals[i + 1]; // sdvig elements
-    }
-    animalCount--; // ymenshenie animal
-    cout << "animal successfully delete" << endl;
-}
-
-// vivod all animals
-void displayAllAnimals() {
-    if (animalCount == 0) {
-        cout << "pusto :(" << endl;
-        return;
-    }
-    for (int i = 0; i < animalCount; ++i) {
-        cout << "index " << i << ": ";
-        animals[i]->display(); // display kagdogo animal
-    }
-}
-
-// sravnenie animals
-void compareAnimals() {
-    int index1, index2;
-
-    cout << "vvedite index first animal (0-" << animalCount - 1 << "): ";
-    cin >> index1;
-    cout << "vvedite index second animal (0-" << animalCount - 1 << "): ";
-    cin >> index2;
-
-    if (*animals[index1] == *animals[index2]) {
-        cout << "Животные равны." << endl;
-    }
-    else {
-        cout << "Животные не равны." << endl;
-    }
-}
 
 int main() {
-    int choice;
 
-    do {
-        cout << "\nmenu:\n";
-        cout << "1. add new animal\n";
-        cout << "2. delete animal\n";
-        cout << "3. vivesti vsex animal\n";
-        cout << "4. sravnit two animals\n";
-        cout << "5. exit\n";
-        cout << "viberite opciy: ";
-        cin >> choice;
+    BaseEnemy* goblin = new Goblin();
+    BaseEnemy* orc = new Orc();
 
-        switch (choice) {
-        case 1:
-            addAnimal();
-            break;
-        case 2:
-            removeAnimal();
-            break;
-        case 3:
-            displayAllAnimals();
-            break;
-        case 4:
-            compareAnimals();
-            break;
-        case 5:
-            cout << "zavershenie work" << endl;
-            break;
-        default:
-            cout << "nedopustim vvod" << endl;
-        }
-    } while (choice != 5);
+    goblin->DoDamage();   
+    goblin->ChasePlayer();
+    goblin->Die();
 
-    for (int i = 0; i < animalCount; i++) {
-        delete animals[i];
-    }
+    orc->DoDamage();     
+    orc->ChasePlayer();
+    orc->Die();
+
+    delete goblin; 
+    delete orc;    
 }
